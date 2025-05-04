@@ -1,0 +1,41 @@
+# ========== Android Studio & IntelliJ ==========
+*.iml
+.idea/
+.idea/caches
+.idea/libraries
+.idea/modules.xml
+.idea/workspace.xml
+.idea/navEditor.xml
+.idea/assetWizardSettings.xml
+
+# ========== Build & Gradle ==========
+.gradle/
+build/
+*/build/
+.cxx/
+.externalNativeBuild/
+captures/
+
+# ========== Local Config ==========
+local.properties
+
+# ========== OS 관련 파일 ==========
+.DS_Store
+Thumbs.db
+
+# ========== APK/AAB & Binary ==========
+*.apk
+*.ap_
+*.aab
+
+# ========== Log & Profile ==========
+*.log
+*.hprof
+
+# ========== Keystore (Signing) ==========
+*.jks
+*.keystore
+
+# ========== Kotlin/Java Compiler ==========
+*.class
+*.kotlin_module
