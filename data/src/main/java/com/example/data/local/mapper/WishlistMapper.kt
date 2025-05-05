@@ -8,8 +8,8 @@ fun WishlistEntity.toDomain(): Product = Product(
     name = name,
     image = image,
     originalPrice = originalPrice,
-    discountedPrice = discountedPrice,
-    isSoldOut = false // 로컬엔 재고정보 없음
+    discountedPrice = discountedPrice ?: 0,
+    isSoldOut = false
 )
 
 fun Product.toEntity(): WishlistEntity = WishlistEntity(

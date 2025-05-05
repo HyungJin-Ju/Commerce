@@ -9,7 +9,7 @@ fun ProductUiState.toDomain(): Product {
         name = name,
         image = imageUrl,
         originalPrice = priceText.filter { it.isDigit() }.toIntOrNull() ?: 0,
-        discountedPrice = discountedPriceText?.filter { it.isDigit() }?.toIntOrNull(),
+        discountedPrice = discountedPriceText?.filter { it.isDigit() }?.toIntOrNull() ?: 0,
         isSoldOut = isSoldOut
     )
 }
@@ -30,14 +30,21 @@ fun Section.toUiState(): SectionUiState {
 }
 
 fun Product.toUiState(isWishlisted: Boolean): ProductUiState {
+    val rate = if (discountedPrice > 0 && originalPrice > 0) {
+        ((originalPrice - discountedPrice) * 100 / originalPrice)
+    } else {
+        null
+    }
+
     return ProductUiState(
         id = id,
         name = name,
         imageUrl = image,
         priceText = "${originalPrice}원",
         isSoldOut = isSoldOut,
-        isDiscounted = discountedPrice != null,
-        discountedPriceText = discountedPrice?.let { "${it}원" },
+        isDiscounted = discountedPrice > 0,
+        discountedPriceText = discountedPrice.let { "${it}원" },
+        discountRate = rate,
         isWishlisted = isWishlisted
     )
 }

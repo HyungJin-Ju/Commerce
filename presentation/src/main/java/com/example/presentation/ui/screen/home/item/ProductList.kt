@@ -3,7 +3,6 @@ package com.example.presentation.ui.screen.home.item
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -26,16 +25,6 @@ fun ProductList(
 ) {
     when (type) {
         is ProductListType.Vertical -> {
-//            LazyColumn(modifier = modifier.height(400.dp)) {
-//                items(products) { product ->
-//                    RatioProductItem(
-//                        state = product,
-//                        isWishlisted = product.isWishlisted,
-//                        onWishlistToggle = { onWishlistToggle(product) }
-//                    )
-//                }
-//            }
-
             val items = remember(products) { products }
 
             Column(modifier = modifier) {
@@ -49,13 +38,12 @@ fun ProductList(
                     }
                 }
             }
+
+            ProductListDivider()
         }
 
         is ProductListType.Horizontal -> {
-            LazyRow(
-                modifier = modifier
-                    .height(200.dp)
-            ) {
+            LazyRow{
                 items(products) { product ->
                     FixedProductItem(
                         state = product,
@@ -64,6 +52,8 @@ fun ProductList(
                     )
                 }
             }
+
+            ProductListDivider()
         }
 
         is ProductListType.Grid -> {
@@ -72,7 +62,7 @@ fun ProductList(
 
             LazyVerticalGrid(
                 columns = GridCells.Fixed(type.columnCount),
-                modifier = modifier.height(300.dp)
+                modifier = modifier.height(640.dp)
             ) {
                 items(subList) { product ->
                     FixedProductItem(
@@ -82,6 +72,8 @@ fun ProductList(
                     )
                 }
             }
+
+            ProductListDivider()
         }
     }
 }
@@ -130,11 +122,12 @@ private fun sampleProductList(): List<ProductUiState> {
         ProductUiState(
             id = it.toLong(),
             name = "상품 제목 $it",
-            imageUrl = "https://via.placeholder.com/300x200.png",
+            imageUrl = "https://something.png",
             priceText = if (isDiscounted) "5,000원" else "3,900원",
             isSoldOut = it % 5 == 0,
             isDiscounted = isDiscounted,
             discountedPriceText = if (isDiscounted) "3,900원" else null,
+            discountRate = 30,
             isWishlisted = it % 3 == 0
         )
     }

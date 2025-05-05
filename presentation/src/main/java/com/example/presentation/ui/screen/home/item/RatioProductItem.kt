@@ -123,6 +123,7 @@ fun RatioProductItemPreview() {
             priceText = "6,000원",
             isSoldOut = false,
             isDiscounted = true,
+            discountRate = 30,
             discountedPriceText = "4,500원"
         ),
         isWishlisted = true,

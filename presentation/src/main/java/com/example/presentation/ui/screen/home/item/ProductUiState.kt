@@ -11,5 +11,6 @@ data class ProductUiState(
     val isSoldOut: Boolean,
     val isDiscounted: Boolean,
     val discountedPriceText: String?,
+    val discountRate: Int?,
     val isWishlisted: Boolean = false
 )

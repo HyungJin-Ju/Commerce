@@ -17,6 +17,6 @@ fun ProductDto.toDomain(): Product = Product(
     name = name,
     image = image,
     originalPrice = originalPrice,
-    discountedPrice = discountedPrice,
+    discountedPrice = discountedPrice ?: 0,
     isSoldOut = isSoldOut
 )
