@@ -1,24 +1,20 @@
 package com.example.presentation.ui.screen.home
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
-import com.example.presentation.ui.screen.home.component.ProductList
+import com.example.presentation.ui.screen.home.component.SectionItemView
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 
@@ -26,12 +22,13 @@ import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 @Composable
 fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
     val sectionItems = viewModel.sectionUiPagingFlow.collectAsLazyPagingItems()
-    val sectionProducts = viewModel.sectionProducts.collectAsState()
+    val sectionProducts by viewModel.sectionProducts.collectAsState()
 
     val isRefreshing = sectionItems.loadState.refresh is LoadState.Loading
+    val swipeRefreshState = rememberSwipeRefreshState(isRefreshing)
 
     SwipeRefresh(
-        state = rememberSwipeRefreshState(isRefreshing),
+        state = swipeRefreshState,
         onRefresh = { sectionItems.refresh() },
     ) {
         LazyColumn(
@@ -40,46 +37,25 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
                 .background(Color(0xFFF0F0F0))
         ) {
             items(sectionItems.itemCount) { index ->
-                val section = sectionItems[index]
-                section?.let {
-                    Text(
-                        text = it.title,
-                        style = MaterialTheme.typography.titleLarge,
-                        modifier = Modifier.padding(top = 16.dp, start = 16.dp)
+                sectionItems[index]?.let { section ->
+                    SectionItemView(
+                        section = section,
+                        products = sectionProducts[section.id],
+                        onLoadProducts = { viewModel.loadProducts(section.id) },
+                        onToggleWishlist = { viewModel.toggleWishlist(it, section.id) }
                     )
-
-                    val products = sectionProducts.value[it.id]
-                    if (products == null) {
-                        LaunchedEffect(it.id) {
-                            viewModel.loadProducts(it.id)
-                        }
-                        Text("로딩 중...", modifier = Modifier.padding(8.dp))
-                    } else {
-                        ProductList(
-                            products = products,
-                            type = it.type,
-                            onWishlistToggle = { viewModel.toggleWishlist(it, section.id) },
-                            modifier = Modifier.fillMaxWidth()
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(16.dp))
                 }
             }
 
-            sectionItems.apply {
+            with(sectionItems.loadState) {
                 when {
-                    loadState.append is LoadState.Loading -> {
-                        item {
-                            Text("추가 로딩 중...", modifier = Modifier.padding(16.dp))
-                        }
+                    append is LoadState.Loading -> item {
+                        Text("로딩 중...", modifier = Modifier.padding(16.dp))
                     }
 
-                    loadState.refresh is LoadState.Error -> {
-                        val e = loadState.refresh as LoadState.Error
-                        item {
-                            Text("에러 발생: ${e.error.localizedMessage}", modifier = Modifier.padding(16.dp))
-                        }
+                    refresh is LoadState.Error -> item {
+                        val e = refresh as LoadState.Error
+                        Text("에러 발생: ${e.error.localizedMessage}", modifier = Modifier.padding(16.dp))
                     }
                 }
             }

@@ -23,7 +23,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -37,20 +36,30 @@ class HomeViewModel @Inject constructor(
     private val removeFromWishlistUseCase: RemoveFromWishlistUseCase
 ) : ViewModel() {
 
+    private val sectionPagingSource by lazy { getSectionListUseCase() }
+
     val sectionUiPagingFlow: Flow<PagingData<SectionUiState>> = Pager(
         config = PagingConfig(pageSize = 10),
-        pagingSourceFactory = { getSectionListUseCase() }
+        pagingSourceFactory = { sectionPagingSource }
     ).flow
-        .onEach { Log.d("HomeViewModel", "새 PagingData emit 됨") }
-        .map { pagingData -> pagingData.map { it.toUiState() } }
+        .map { pagingData ->
+            pagingData.map { it.toUiState() }.also {
+                Log.d("HomeViewModel", "새 SectionUiState PagingData emit")
+            }
+        }
         .cachedIn(viewModelScope)
 
     private val _sectionProducts = MutableStateFlow<Map<Int, List<ProductUiState>>>(emptyMap())
     val sectionProducts: StateFlow<Map<Int, List<ProductUiState>>> = _sectionProducts.asStateFlow()
 
     private val _wishlist = MutableStateFlow<Set<Long>>(emptySet())
+    val wishlist: StateFlow<Set<Long>> = _wishlist.asStateFlow()
 
     init {
+        loadWishlist()
+    }
+
+    private fun loadWishlist() {
         viewModelScope.launch {
             _wishlist.value = getWishlistUseCase().map { it.id }.toSet()
         }
@@ -72,15 +81,17 @@ class HomeViewModel @Inject constructor(
             } else {
                 addToWishlistUseCase(product.toDomain())
             }
-
-            // 갱신된 위시리스트로 상태 반영
-            _wishlist.value = getWishlistUseCase().map { it.id }.toSet()
-
-            val updated = _sectionProducts.value[sectionId]?.map {
-                it.copy(isWishlisted = _wishlist.value.contains(it.id))
-            } ?: emptyList()
-
-            _sectionProducts.update { it + (sectionId to updated) }
+            refreshWishlistAndProducts(sectionId)
         }
+    }
+
+    private suspend fun refreshWishlistAndProducts(sectionId: Int) {
+        _wishlist.value = getWishlistUseCase().map { it.id }.toSet()
+
+        val updated = _sectionProducts.value[sectionId]?.map {
+            it.copy(isWishlisted = _wishlist.value.contains(it.id))
+        } ?: return
+
+        _sectionProducts.update { it + (sectionId to updated) }
     }
 }

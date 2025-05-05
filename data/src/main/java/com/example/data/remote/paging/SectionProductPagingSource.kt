@@ -17,7 +17,6 @@ class SectionProductPagingSource(
         return try {
             val page = params.key ?: 0
 
-            // 최초 한 번만 전체 데이터 불러오기
             if (allProducts == null) {
                 allProducts = repository.getSectionProducts(sectionId)
             }

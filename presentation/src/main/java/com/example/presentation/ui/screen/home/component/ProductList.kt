@@ -9,12 +9,9 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.key
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.util.fastForEach
 import com.example.presentation.ui.screen.home.model.ProductListType
 import com.example.presentation.ui.screen.home.model.ProductUiState
 
@@ -25,14 +22,24 @@ fun ProductList(
     onWishlistToggle: (ProductUiState) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    when (type) {
-        is ProductListType.Vertical -> {
-            val items = remember(products) { products }
+    if (products.isEmpty()) return
 
-            Column(modifier = modifier) {
-                items.fastForEach { product ->
-                    key(product.id) {
-                        RatioProductItem(
+    Column(modifier = modifier) {
+        when (type) {
+            is ProductListType.Vertical -> {
+                products.forEach { product ->
+                    RatioProductItem(
+                        state = product,
+                        isWishlisted = product.isWishlisted,
+                        onWishlistToggle = { onWishlistToggle(product) }
+                    )
+                }
+            }
+
+            is ProductListType.Horizontal -> {
+                LazyRow(modifier = Modifier.fillMaxWidth()) {
+                    items(products, key = { it.id }) { product ->
+                        FixedProductItem(
                             state = product,
                             isWishlisted = product.isWishlisted,
                             onWishlistToggle = { onWishlistToggle(product) }
@@ -41,42 +48,28 @@ fun ProductList(
                 }
             }
 
-            ProductListDivider()
-        }
+            is ProductListType.Grid -> {
+                val visibleCount = type.columnCount * type.rowCount
+                val subList = products.take(visibleCount)
 
-        is ProductListType.Horizontal -> {
-            LazyRow{
-                items(products) { product ->
-                    FixedProductItem(
-                        state = product,
-                        isWishlisted = product.isWishlisted,
-                        onWishlistToggle = { onWishlistToggle(product) }
-                    )
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(type.columnCount),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(640.dp)
+                ) {
+                    items(subList, key = { it.id }) { product ->
+                        FixedProductItem(
+                            state = product,
+                            isWishlisted = product.isWishlisted,
+                            onWishlistToggle = { onWishlistToggle(product) }
+                        )
+                    }
                 }
             }
-
-            ProductListDivider()
         }
 
-        is ProductListType.Grid -> {
-            val visibleCount = type.columnCount * type.rowCount
-            val subList = products.take(visibleCount)
-
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(type.columnCount),
-                modifier = modifier.height(640.dp)
-            ) {
-                items(subList) { product ->
-                    FixedProductItem(
-                        state = product,
-                        isWishlisted = product.isWishlisted,
-                        onWishlistToggle = { onWishlistToggle(product) }
-                    )
-                }
-            }
-
-            ProductListDivider()
-        }
+        ProductListDivider()
     }
 }
 
