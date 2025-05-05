@@ -1,4 +1,4 @@
-package com.example.presentation.ui.screen.home.item
+package com.example.presentation.ui.screen.home.model
 
 sealed class ProductListType {
     data object Vertical : ProductListType()

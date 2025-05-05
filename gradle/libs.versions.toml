@@ -1,5 +1,5 @@
 [versions]
-androidxMaterial3 = "1.2.0-alpha05"
+accompanistSwiperefresh = "0.33.2-alpha"
 compileSdk = "35"
 minSdk = "26"
 agp = "8.7.3"
@@ -29,8 +29,8 @@ pagingCompose = "1.0.0-alpha20"
 uiTooling = "1.8.0"
 
 [libraries]
+accompanist-swiperefresh = { module = "com.google.accompanist:accompanist-swiperefresh", version.ref = "accompanistSwiperefresh" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
-androidx-material3-v120alpha05 = { module = "androidx.compose.material3:material3", version.ref = "androidxMaterial3" }
 androidx-ui-tooling = { module = "androidx.compose.ui:ui-tooling", version.ref = "uiTooling" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }

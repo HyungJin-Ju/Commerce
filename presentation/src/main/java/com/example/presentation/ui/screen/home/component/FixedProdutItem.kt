@@ -1,4 +1,4 @@
-package com.example.presentation.ui.screen.home.item
+package com.example.presentation.ui.screen.home.component
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
@@ -26,6 +26,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
 import com.example.presentation.R
+import com.example.presentation.ui.screen.home.model.ProductUiState
 
 @Composable
 fun FixedProductItem(

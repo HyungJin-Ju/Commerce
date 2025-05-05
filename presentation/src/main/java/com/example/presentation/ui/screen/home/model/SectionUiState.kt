@@ -1,4 +1,4 @@
-package com.example.presentation.ui.screen.home.item
+package com.example.presentation.ui.screen.home.model
 
 import androidx.compose.runtime.Immutable
 

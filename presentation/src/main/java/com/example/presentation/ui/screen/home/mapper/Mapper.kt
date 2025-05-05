@@ -1,7 +1,10 @@
-package com.example.presentation.ui.screen.home.item
+package com.example.presentation.ui.screen.home.mapper
 
 import com.example.domain.model.Product
 import com.example.domain.model.Section
+import com.example.presentation.ui.screen.home.model.ProductListType
+import com.example.presentation.ui.screen.home.model.ProductUiState
+import com.example.presentation.ui.screen.home.model.SectionUiState
 import java.text.NumberFormat
 import java.util.Locale
 

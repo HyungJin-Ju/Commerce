@@ -64,9 +64,7 @@ dependencies {
     implementation(libs.coil.compose)
     implementation(libs.paging.runtime)
     implementation(libs.paging.compose)
-//    implementation(libs.androidx.material3.v120alpha05)
-    implementation("com.google.accompanist:accompanist-swiperefresh:0.33.2-alpha")
-//    implementation("androidx.compose.material3:material3:1.1.1")
+    implementation(libs.accompanist.swiperefresh)
 
     debugImplementation(libs.androidx.ui.tooling)
 

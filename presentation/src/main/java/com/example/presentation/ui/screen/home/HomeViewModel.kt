@@ -1,5 +1,6 @@
 package com.example.presentation.ui.screen.home
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
@@ -12,16 +13,17 @@ import com.example.domain.usecase.GetProductsUseCase
 import com.example.domain.usecase.GetSectionsUseCase
 import com.example.domain.usecase.GetWishlistUseCase
 import com.example.domain.usecase.RemoveFromWishlistUseCase
-import com.example.presentation.ui.screen.home.item.ProductUiState
-import com.example.presentation.ui.screen.home.item.SectionUiState
-import com.example.presentation.ui.screen.home.item.toDomain
-import com.example.presentation.ui.screen.home.item.toUiState
+import com.example.presentation.ui.screen.home.model.ProductUiState
+import com.example.presentation.ui.screen.home.model.SectionUiState
+import com.example.presentation.ui.screen.home.mapper.toDomain
+import com.example.presentation.ui.screen.home.mapper.toUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -39,6 +41,7 @@ class HomeViewModel @Inject constructor(
         config = PagingConfig(pageSize = 10),
         pagingSourceFactory = { getSectionListUseCase() }
     ).flow
+        .onEach { Log.d("HomeViewModel", "새 PagingData emit 됨") }
         .map { pagingData -> pagingData.map { it.toUiState() } }
         .cachedIn(viewModelScope)
 
