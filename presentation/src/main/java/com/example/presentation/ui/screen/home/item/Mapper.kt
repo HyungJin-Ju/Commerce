@@ -2,14 +2,28 @@ package com.example.presentation.ui.screen.home.item
 
 import com.example.domain.model.Product
 import com.example.domain.model.Section
+import java.text.NumberFormat
+import java.util.Locale
 
 fun ProductUiState.toDomain(): Product {
+    val numberFormat = NumberFormat.getNumberInstance(Locale.KOREA)
+
+    fun parsePrice(text: String?): Int {
+        return try {
+            text?.replace("원", "")?.let {
+                numberFormat.parse(it)?.toInt() ?: 0
+            } ?: 0
+        } catch (e: Exception) {
+            0
+        }
+    }
+
     return Product(
         id = id,
         name = name,
         image = imageUrl,
-        originalPrice = priceText.filter { it.isDigit() }.toIntOrNull() ?: 0,
-        discountedPrice = discountedPriceText?.filter { it.isDigit() }?.toIntOrNull() ?: 0,
+        originalPrice = parsePrice(priceText),
+        discountedPrice = parsePrice(discountedPriceText),
         isSoldOut = isSoldOut
     )
 }
@@ -30,6 +44,8 @@ fun Section.toUiState(): SectionUiState {
 }
 
 fun Product.toUiState(isWishlisted: Boolean): ProductUiState {
+    val formatter = NumberFormat.getNumberInstance(Locale.KOREA)
+
     val rate = if (discountedPrice > 0 && originalPrice > 0) {
         ((originalPrice - discountedPrice) * 100 / originalPrice)
     } else {
@@ -40,10 +56,10 @@ fun Product.toUiState(isWishlisted: Boolean): ProductUiState {
         id = id,
         name = name,
         imageUrl = image,
-        priceText = "${originalPrice}원",
+        priceText = "${formatter.format(originalPrice)}원",
         isSoldOut = isSoldOut,
         isDiscounted = discountedPrice > 0,
-        discountedPriceText = discountedPrice.let { "${it}원" },
+        discountedPriceText = formatter.format(discountedPrice).let { "${it}원" },
         discountRate = rate,
         isWishlisted = isWishlisted
     )

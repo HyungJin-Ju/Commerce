@@ -47,7 +47,7 @@ fun RatioProductItem(
             .clip(RoundedCornerShape(8.dp))
     }
 
-    Column(modifier = modifier.fillMaxWidth()) {
+    Column(modifier = modifier.fillMaxWidth().padding(8.dp)) {
         Box {
             AsyncImage(
                 model = state.imageUrl,
@@ -60,7 +60,7 @@ fun RatioProductItem(
                 onClick = onWishlistToggle,
                 modifier = Modifier
                     .align(Alignment.TopEnd)
-                    .padding(4.dp)
+                    .padding(top = 16.dp, end = 16.dp)
                     .size(24.dp)
                     .background(Color.White.copy(alpha = 0.7f), shape = CircleShape)
             ) {
@@ -87,27 +87,29 @@ fun RatioProductItem(
         Row(verticalAlignment = Alignment.CenterVertically) {
             if (state.isDiscounted && state.discountedPriceText != null) {
                 Text(
-                    text = state.discountedPriceText,
+                    text = "${state.discountRate}%",
                     fontWeight = FontWeight.Bold,
-                    color = Color.Red
+                    color = Color(0xFFFA622F)
                 )
                 Spacer(modifier = Modifier.width(4.dp))
             }
 
             Text(
                 text = state.priceText,
-                fontWeight = if (state.isDiscounted) FontWeight.Normal else FontWeight.Bold
+                fontWeight = if (state.isDiscounted) FontWeight.Bold else FontWeight.Normal
             )
-        }
 
-        state.discountedPriceText?.let {
-            Text(
-                text = it,
-                style = MaterialTheme.typography.bodySmall.copy(
-                    color = Color.Gray,
-                    textDecoration = TextDecoration.LineThrough
-                )
-            )
+            if (state.isDiscounted) {
+                state.discountedPriceText?.let {
+                    Text(
+                        text = it,
+                        style = MaterialTheme.typography.bodySmall.copy(
+                            color = Color.Gray,
+                            textDecoration = TextDecoration.LineThrough
+                        )
+                    )
+                }
+            }
         }
     }
 }
